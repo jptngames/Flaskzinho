@@ -1,36 +1,64 @@
-from flask import Flask, jsonify
-from random import choice
-from unidecode import unidecode
+from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
-piadas_lista = [
-    "Por que o livro de matemática se suicidou? Porque tinha muitos problemas.",
-    "O que o pato disse para a pata? Vem quá!",
-    "Qual é o cúmulo da paciência? Esperar o ônibus na internet.",
-    "Por que o jacaré tirou o filho da escola? Porque ele réptil de ano.",
-    "O que o tomate foi fazer no banco? Tirar extrato.",
-    "Como o elétron atende o telefone? Próton!",
-    "O que o zero disse para o oito? Que cinto maneiro!",
-    "Por que a aranha é o animal mais carente? Porque ela é um aracneedy.",
-    "Qual é o peixe mais inteligente? O atum.",
-    "Por que o computador foi preso? Porque ele executou um programa.",
-    "O que o chão falou para a mesa? Tampo tudo.",
-    "Por que o músico foi preso? Porque ele estava em uma nota errada.",
-    "O que o tijolo falou para o outro? Há um ciumento entre nós.",
-    "Por que o relógio foi para a escola? Para aprender a marcar o tempo.",
-    "O que o fotógrafo foi fazer na prisão? Revelar os negativos.",
-    "Por que o lápis não pode ir à escola? Porque ele está sem ponta.",
-    "O que o papel disse para o lápis? Estou em branco.",
-    "Por que a bicicleta não pode ficar em pé sozinha? Porque ela está sem pedal.",
-    "O que o elevador disse para a escada? Suba de nível.",
-    "Por que o cachorro não gosta de celular? Porque ele prefere latir."
+livros = [
+    {
+        'id': 1,
+        'título': 'O Senhor dos Anéis - A Sociedade do Anel',
+        'autor': 'J.R.R Tolkien'
+    },
+    {
+        'id': 2,
+        'título': 'Harry Potter e a Pedra Filosofal',
+        'autor': 'J.K Howling'
+    },
+    {
+        'id': 3,
+        'título': 'James Clear',
+        'autor': 'Hábitos Atômicos'
+    },
 ]
 
-@app.route('/')
-def piadas():
-    data = {"piada": unidecode(choice(piadas_lista)), "copyright": "github.com/RexxLab"}
-    return jsonify(data)
+@app.route('/', methods=['GET'])
+def home():
+	data = {"/livros":"retorna todos os livros da api (GET)", "/livros/id":"retorna um livro por id (GET)", "/livros": "Edita um livro (PUT)", "/livros":"Cria um livro (POST)","/livros/id": "Apaga um livro específico pelo id(DELETE)"}
+	return jsonify(data)
 
-if __name__ == "__main__":
-    app.run()
+# Consultar (todos)
+@app.route('/livros', methods=['GET'])
+def obter_livros():
+	return jsonify(livros)
+
+# Consultar (id)
+@app.route('/livros/<int:id>', methods=['GET'])
+def obter_livro_por_id(id):
+	for livro in livros:
+		if livro.get('id') == id:
+			return jsonify(livro)
+			
+# Editar
+@app.route('/livros/<int:id>', methods = ['PUT'])
+def editar_livro_por_id(id):
+	livro_alterado = request.get_json()
+	for indice, livro in enumerate(livros):
+		if livro.get('id') == id:
+			livros[indice].update(livro_alterado)
+			return jsonify(livros[indice])
+	
+# Criar
+@app.route('/livros', methods=['POST'])
+def incluir_novo_livro():
+	novo_livro = request.get_json()
+	livros.append(novo_livro)
+	return jsonify(livros)
+
+# Excluir
+@app.route('/livros/<int:id>', methods=['DELETE'])
+def excluir_livro(id):
+	for indice, livro in enumerate(livros):
+		if livro.get('id') == id:
+			del livros[indice]
+	return jsonify(livros)
+	
+app.run(host='localhost', port=5000)
