@@ -20,11 +20,6 @@ livros = [
     },
 ]
 
-@app.route('/', methods=['GET'])
-def home():
-	data = {"/livros":"retorna todos os livros da api (GET)", "/livros/id":"retorna um livro por id (GET)", "/livros": "Edita um livro (PUT)", "/livros":"Cria um livro (POST)","/livros/id": "Apaga um livro específico pelo id(DELETE)"}
-	return jsonify(data)
-
 # Consultar (todos)
 @app.route('/livros', methods=['GET'])
 def obter_livros():
