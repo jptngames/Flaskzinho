@@ -55,5 +55,3 @@ def excluir_livro(id):
 		if livro.get('id') == id:
 			del livros[indice]
 	return jsonify(livros)
-	
-app.run()
