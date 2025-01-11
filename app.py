@@ -61,4 +61,4 @@ def excluir_livro(id):
 			del livros[indice]
 	return jsonify(livros)
 	
-app.run(host='localhost', port=5000)
+app.run()
